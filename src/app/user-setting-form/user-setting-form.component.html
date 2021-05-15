@@ -1,48 +1,73 @@
 <div class="container topMar10">
     <h2>User Settings</h2>
-    <form action="">
+    <form action="" #form="ngForm" (ngSubmit)="formSubmit(form)">
         <div class="mb-3">
             <label for="name">Name</label>
-            <input class="form-control" type="text" name="name" id="name" placeholder="name" />
+            <input class="form-control" type="text" (blur)="onBlur(nameField)" name="name" id="name" 
+            placeholder="name" [(ngModel)]="userSettings.name" #nameField="ngModel" required
+            [class.field-error]="form.submitted && nameField.invalid"
+             />
+
+             <div [hidden]="!form.submitted || nameField.valid" class="alert alert-danger">
+               Please Enter Valid Name
+             </div>
         </div>
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="gridCheck1">
-            <label class="form-check-label" for="gridCheck1">
-              Example checkbox
+            <input class="form-check-input" type="checkbox" name="emailOffer" id="emailOffer" [(ngModel)]="userSettings.emailOffer" />
+            <label class="form-check-label" for="emailOffer">
+              Email Special Offer
             </label>
           </div>
 
         <h5>User Interface</h5>
         <div class="mb-3">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="userInterfaces" id="gridRadios1" value="option1">
+                <input class="form-check-input" type="radio" name="userInterfaces" id="gridRadios1" value="light" [(ngModel)]="userSettings.interfaceStyle" required>
                 <label class="form-check-label" for="gridRadios1">
                 Light
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="userInterfaces" id="gridRadios2" value="option2">
+                <input class="form-check-input" type="radio" name="userInterfaces" id="gridRadios2" value="medium" [(ngModel)]="userSettings.interfaceStyle">
                 <label class="form-check-label" for="gridRadios2">
                 Medium
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="userInterfaces" id="gridRadios3" value="option3">
+                <input class="form-check-input" type="radio" name="userInterfaces" id="gridRadios3" value="dark" [(ngModel)]="userSettings.interfaceStyle">
                 <label class="form-check-label" for="gridRadios3">
                 Dark
                 </label>
             </div>
+
+            <div class="alert alert-danger" *ngIf="form.submitted && !userSettings.interfaceStyle">
+              Please select Interface theme
+            </div>
         </div>
         <div class="mb-3">
             <label class="" for="subscriptionType">User Subscription</label>
-            <select class="form-select" id="subscriptionType">
-              <option selected>Choose...</option>
-              <option value="M">Monthly</option>
-              <option value="A">Annual</option>
-              <option value="L">Lifetime</option>
+            <select class="form-select" id="subscriptionType" name="subscriptionType" required
+             [(ngModel)]="userSettings.userSubscription" [class.field-error]="form.submitted && !userSettings.userSubscription">
+              <option selected value="null">Choose...</option>
+              <option *ngFor="let subtype of subscriptionTypes | async">{{subtype}}</option>
             </select>
+
+            <div class="alert alert-danger" *ngIf="form.submitted && !userSettings.userSubscription">
+              Please select valid Subscription Type
+            </div>
           </div>
-        <button class="btn btn-primary">Send</button>
+          <div class="mb-3">
+            <label for="name">Notes</label>
+            <textarea  class="form-control" name="notes" id="" cols="30" rows="3" [(ngModel)]="userSettings.notes"></textarea>
+        </div>
+
+        <div class="alert alert-danger" *ngIf="(form.submitted && form.invalid) || formError">
+          {{formErrMsg}}
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2">Send</button>
+        <button type="reset" class="btn btn-secondary">Clear</button>
     </form>  
     
 </div>
+{{ userSettings | json}}
